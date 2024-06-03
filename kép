@@ -1,0 +1,93 @@
+import flet as ft
+from PIL import Image
+import io
+
+def main(page: ft.Page):
+    page.title = "képválasztó"
+    page.theme_mode = ft.ThemeMode.LIGHT
+
+    def pick_image(e):
+        file_picker.pick_files(allowed_extensions=["jpg", "jpeg", "png"])
+
+    def file_picker_result(e: ft.FilePickerResultEvent):
+        if e.files:
+            file = e.files[0]
+            img = Image.open(io.BytesIO(file.read_bytes()))
+            img_width, img_height = img.size
+            image_view.src = file.path
+            image_view.fit = ft.ImageFit.CONTAIN
+            image_info.value = f"Width: {img_width} px, Height: {img_height} px"
+            scale_slider.value = 1.0
+            scale_slider.disabled = False
+            page.update()
+
+    def scale_image(e):
+        if image_view.src:
+            scale = scale_slider.value
+            image_view.width = original_width * scale
+            image_view.height = original_height * scale
+            page.update()
+
+    file_picker = ft.FilePicker(on_result=file_picker_result)
+    page.overlay.append(file_picker)
+
+    pick_image_button = ft.ElevatedButton(
+        "Pick Image", 
+        on_click=pick_image, 
+        style=ft.ButtonStyle(
+            color=ft.colors.WHITE, 
+            bgcolor=ft.colors.BLUE, 
+            shape=ft.ButtonShape.ROUNDED_RECTANGLE
+        )
+    )
+    
+    image_view = ft.Image(
+        width=400,
+        height=300,
+        border_radius=ft.BorderRadius.circular(10),
+        box_shadow=ft.BoxShadow(
+            offset=ft.Offset(2, 2),
+            blur_radius=10,
+            color=ft.colors.BLACK.with_opacity(0.25)
+        ),
+    )
+    image_info = ft.Text(
+        "",
+        size=16,
+        weight=ft.FontWeight.BOLD,
+        color=ft.colors.BLACK
+    )
+
+    scale_slider = ft.Slider(
+        min=0.1, 
+        max=2.0, 
+        value=1.0, 
+        divisions=19, 
+        label="{value:.1f}", 
+        on_change=scale_image,
+        disabled=True,
+        active_color=ft.colors.BLUE,
+        inactive_color=ft.colors.BLUE.with_opacity(0.5)
+    )
+
+    original_width, original_height = 400, 300
+
+    page.add(
+        ft.Column(
+            [
+                pick_image_button,
+                ft.Container(
+                    image_view, 
+                    margin=ft.EdgeInsets.symmetric(vertical=20)
+                ),
+                image_info,
+                scale_slider
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20,
+            padding=20
+        )
+    )
+
+ft.app(target=main)
