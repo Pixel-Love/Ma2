@@ -1,0 +1,90 @@
+import flet as ft
+import random
+
+def main(page: ft.Page):
+    page.title = "Kő-Papír-Olló"
+    page.theme_mode = ft.ThemeMode.LIGHT
+
+    options = ["Kő", "Papír", "Olló"]
+
+    def play_game(player_choice):
+        computer_choice = random.choice(options)
+        result = determine_winner(player_choice, computer_choice)
+        result_text.value = f"Te: {player_choice}\nSzámítógép: {computer_choice}\nEredmény: {result}"
+        page.update()
+
+    def determine_winner(player, computer):
+        if player == computer:
+            return "Döntetlen"
+        elif (player == "Kő" and computer == "Olló") or \
+             (player == "Papír" and computer == "Kő") or \
+             (player == "Olló" and computer == "Papír"):
+            return "Nyertél"
+        else:
+            return "Vesztettél"
+
+    result_text = ft.Text("", size=20, weight=ft.FontWeight.BOLD)
+
+    rock_button = ft.ElevatedButton(
+        "Kő", 
+        on_click=lambda e: play_game("Kő"),
+        style=ft.ButtonStyle(
+            color=ft.colors.WHITE,
+            bgcolor=ft.colors.BLUE,
+            shape=ft.ButtonShape.ROUNDED_RECTANGLE
+        )
+    )
+    
+    paper_button = ft.ElevatedButton(
+        "Papír", 
+        on_click=lambda e: play_game("Papír"),
+        style=ft.ButtonStyle(
+            color=ft.colors.WHITE,
+            bgcolor=ft.colors.GREEN,
+            shape=ft.ButtonShape.ROUNDED_RECTANGLE
+        )
+    )
+    
+    scissors_button = ft.ElevatedButton(
+        "Olló", 
+        on_click=lambda e: play_game("Olló"),
+        style=ft.ButtonStyle(
+            color=ft.colors.WHITE,
+            bgcolor=ft.colors.RED,
+            shape=ft.ButtonShape.ROUNDED_RECTANGLE
+        )
+    )
+
+    page.add(
+        ft.Container(
+            content=ft.Column(
+                [
+                    ft.Text("Kő-Papír-Olló", size=40, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_GREY),
+                    ft.Row(
+                        [rock_button, paper_button, scissors_button], 
+                        alignment=ft.MainAxisAlignment.CENTER, 
+                        spacing=20
+                    ),
+                    ft.Container(
+                        result_text,
+                        margin=ft.EdgeInsets.only(top=20)
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=30,
+                padding=30
+            ),
+            alignment=ft.Alignment.CENTER,
+            bgcolor=ft.colors.LIGHT_BLUE_ACCENT,
+            border_radius=ft.BorderRadius.circular(15),
+            padding=50,
+            box_shadow=ft.BoxShadow(
+                offset=ft.Offset(0, 5),
+                blur_radius=15,
+                color=ft.colors.BLACK.with_opacity(0.2)
+            )
+        )
+    )
+
+ft.app(target=main)
