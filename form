@@ -1,0 +1,110 @@
+import flet as ft
+
+def main(page:ft.Page):
+        ######################   textfield-> Name
+
+    def button_clicked(e):
+        t.value = f"Textboxes values are:  '{tb1.value}', '{tb3.value}', '{tb4.value}', '{tb5.value}'."
+        page.update()
+
+    t = ft.Text()
+    tb1 = ft.TextField(label="First Name", hint_text="First Name")
+    tb3 = ft.TextField(label="Last Name", hint_text="Last Name")
+    tb4 = ft.TextField(label="e-mail", hint_text="e-mail")
+    tb5 = ft.TextField(label="say youre message")
+    page.add(tb1, tb3, tb4, tb5, t)
+
+    ######################  age slider
+    page.add(ft.Text("how old are you?"))
+    page.horizontal_alignment = page.vertical_alignment = "center"
+    page.theme_mode = ft.ThemeMode.LIGHT
+    page.scroll = ft.ScrollMode.AUTO
+    def handle_change_start(e):
+        slider_status.value = "Your age..."
+        page.update()
+
+    def handle_change(e):
+        slider_value.value = str(e.control.value)
+        page.update()
+
+    def handle_change_end(e):
+        slider_status.value = "Your age "
+        page.update()
+
+    page.add(
+        
+        slider_value := ft.Text("0.0"),
+        ft.CupertinoSlider(
+            divisions=100,
+            max=100,
+            active_color=ft.colors.PURPLE,
+            thumb_color=ft.colors.PURPLE,
+            on_change_start=handle_change_start,
+            on_change_end=handle_change_end,
+            on_change=handle_change,
+        ),
+        slider_status := ft.Text(),
+    )
+    ######################   dropdown
+    
+    def find_option(option_name):
+        for option in d.options:
+            if option_name == option.key:
+                return option
+        return None
+
+    def add_clicked(e):
+        d.options.append(ft.dropdown.Option(option_textbox.value))
+        d.value = option_textbox.value
+        option_textbox.value = " "
+        page.update()
+
+    def delete_clicked(e):
+        option = find_option(d.value)
+        if option != None:
+            d.options.remove(option)
+            # d.value = None
+            page.update()
+
+    d = ft.Dropdown()
+    option_textbox = ft.TextField(label="what languages you know?")
+    add = ft.ElevatedButton("Add", on_click=add_clicked)
+    delete = ft.OutlinedButton("Delete selected", on_click=delete_clicked)
+    page.add(d, ft.Row(controls=[option_textbox, add, delete]))
+
+    
+
+
+    ######################   checkbox
+    def button_clicked(e):
+        t.value = (
+            f"Checkboxes values are:  {c1._get_value_or_list_attr}, {c2.value}, {c3.value}, {c4.value}."
+        )
+        page.update()
+
+    t = ft.Text()
+    c1 = ft.Checkbox(label="do you like fish?", tristate=False)
+    c3 = ft.Checkbox(label="do you like to code?", tristate=False)
+    c2 = ft.Checkbox(label="You shower sometimes", tristate=True)
+    c4 = ft.Checkbox(label="Would you like to go to collage?", value=False)
+    
+    
+    page.add(c1, c2, c3, c4, t)
+
+    #####################    radio
+    def radiogroup_changed(e):
+        t1.value = f"what's the best primary color?:  {e.control.value}"
+    page.update()
+
+    t1 = ft.Text()
+    cg = ft.RadioGroup(content=ft.Column([
+        ft.Radio(value="red", label="red"),
+        ft.Radio(value="green", label="green"),
+        ft.Radio(value="blue", label="blue")]), on_change=radiogroup_changed)
+    b = ft.ElevatedButton(text="submit", on_click=button_clicked)
+    page.add(ft.Text("the best color:"), cg, t1, b)
+
+
+
+
+ft.app(target=main)
